@@ -1,10 +1,31 @@
 name: QA Agent
 on:
   workflow_call:
+
 jobs:
   qa:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: npm install cypress
-      - run: npx cypress run
+
+      - name: Configurar Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Instalar dependencias frontend
+        run: cd frontend && npm install
+
+      - name: Lint frontend
+        run: cd frontend && npm run lint
+
+      - name: Instalar flake8
+        run: pip install flake8
+
+      - name: Lint backend
+        run: flake8 backend/
