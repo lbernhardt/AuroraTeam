@@ -20,7 +20,7 @@ jobs:
       backend_ready: '${{ needs.backend.outputs.backend_ready }}'
 
   qa:
-    needs: frontend
+    needs: [frontend, techlead]
     uses: ./.github/workflows/qa.yml
     with:
       repo_ok: '${{ needs.techlead.outputs.repo_ok }}'
@@ -29,7 +29,7 @@ jobs:
       backlog_present: '${{ needs.techlead.outputs.backlog_present }}'
 
   founder:
-    needs: qa
+    needs: [qa, techlead]
     uses: ./.github/workflows/founder.yml
     with:
       qa_ready: '${{ needs.qa.outputs.qa_ready }}'
