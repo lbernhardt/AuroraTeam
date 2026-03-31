@@ -1,6 +1,6 @@
 name: QA Agent
 on:
-  workflow_dispatch:
+  workflow_call:
 jobs:
   qa:
     runs-on: ubuntu-latest
