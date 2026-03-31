@@ -1,0 +1,10 @@
+name: QA Agent
+on:
+  workflow_dispatch:
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install cypress
+      - run: npx cypress run

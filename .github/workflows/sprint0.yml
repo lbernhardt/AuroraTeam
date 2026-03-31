@@ -1,0 +1,18 @@
+name: Sprint 0 Orchestrator
+on:
+  workflow_dispatch:
+jobs:
+  techlead:
+    uses: ./.github/workflows/techlead.yml
+  backend:
+    needs: techlead
+    uses: ./.github/workflows/backend.yml
+  frontend:
+    needs: backend
+    uses: ./.github/workflows/frontend.yml
+  qa:
+    needs: frontend
+    uses: ./.github/workflows/qa.yml
+  founder:
+    needs: qa
+    uses: ./.github/workflows/founder.yml

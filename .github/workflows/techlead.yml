@@ -1,0 +1,10 @@
+name: Tech Lead Agent
+on:
+  workflow_dispatch:
+jobs:
+  techlead:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: echo "Validando estándares de código..."
+      - run: npm run lint || flake8

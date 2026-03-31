@@ -1,0 +1,14 @@
+backend.ymlname: Backend Agent
+on:
+  workflow_dispatch:   # se dispara manualmente o desde otro workflow
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - run: pip install flask pytest requests
+      - run: pytest backend/
