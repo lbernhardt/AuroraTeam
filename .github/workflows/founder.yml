@@ -6,11 +6,11 @@ on:
       qa_ready:
         description: "Resultado de QA"
         required: true
-        type: boolean
+        type: string
       backlog_present:
         description: "Indica si el backlog está presente"
         required: true
-        type: boolean
+        type: string
     outputs:
       release_ready:
         description: "Indica si el proyecto está listo para una nueva entrega"
@@ -22,7 +22,7 @@ jobs:
     outputs:
       release_ready: ${{ steps.set.outputs.release_ready }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Verificar inputs de QA y backlog
         run: |
           if [ "${{ inputs.qa_ready }}" != "true" ]; then

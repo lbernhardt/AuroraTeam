@@ -6,19 +6,19 @@ on:
       repo_ok:
         description: "Resultado de validación del repositorio por TechLead"
         required: true
-        type: boolean
+        type: string
       backend_ready:
         description: "Resultado de validación del backend"
         required: true
-        type: boolean
+        type: string
       frontend_ready:
         description: "Resultado de validación del frontend"
         required: true
-        type: boolean
+        type: string
       backlog_present:
         description: "Indica si el backlog está presente"
         required: true
-        type: boolean
+        type: string
     outputs:
       qa_ready:
         description: "Indica si QA completó todas las validaciones"
@@ -30,7 +30,7 @@ jobs:
     outputs:
       qa_ready: ${{ steps.set.outputs.qa_ready }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Verificar inputs de agentes previos
         run: |
           if [ "${{ inputs.repo_ok }}" != "true" ]; then

@@ -5,7 +5,7 @@ on:
       repo_ok:
         description: "Validación previa del repositorio por TechLead"
         required: true
-        type: boolean
+        type: string
     outputs:
       backend_ready:
         description: "Indica si el backend pasó todas las validaciones"
@@ -17,7 +17,7 @@ jobs:
     outputs:
       backend_ready: ${{ steps.set.outputs.backend_ready }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Validar input de TechLead
         run: |
           if [ "${{ inputs.repo_ok }}" != "true" ]; then

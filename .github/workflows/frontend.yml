@@ -6,7 +6,7 @@ on:
       backend_ready:
         description: "Resultado de validación del backend"
         required: true
-        type: boolean
+        type: string
     outputs:
       frontend_ready:
         description: "Indica si el frontend pasó pruebas y build"
@@ -18,7 +18,7 @@ jobs:
     outputs:
       frontend_ready: ${{ steps.set.outputs.frontend_ready }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Validar input de Backend
         run: |
           if [ "${{ inputs.backend_ready }}" != "true" ]; then

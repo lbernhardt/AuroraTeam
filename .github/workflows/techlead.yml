@@ -17,7 +17,7 @@ jobs:
       repo_ok: ${{ steps.set.outputs.repo_ok }}
       backlog_present: ${{ steps.set.outputs.backlog_present }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Validar estructura del proyecto
         run: |
           test -f backend/app.py
