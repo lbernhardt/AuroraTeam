@@ -1,6 +1,6 @@
 name: Backend Agent
 on:
-  workflow_dispatch:   # lo disparás manualmente desde Actions
+  workflow_call:
 
 jobs:
   backend:

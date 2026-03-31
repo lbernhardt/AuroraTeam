@@ -1,6 +1,6 @@
 name: Tech Lead Agent
 on:
-  workflow_dispatch:
+  workflow_call:
 jobs:
   techlead:
     runs-on: ubuntu-latest

@@ -1,6 +1,6 @@
 name: Founder Agent
 on:
-  workflow_dispatch:
+  workflow_call:
 jobs:
   founder:
     runs-on: ubuntu-latest
