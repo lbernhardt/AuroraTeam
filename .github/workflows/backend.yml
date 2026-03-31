@@ -1,20 +1,39 @@
 name: Backend Agent
 on:
   workflow_call:
+    inputs:
+      repo_ok:
+        description: "Validación previa del repositorio por TechLead"
+        required: true
+        type: boolean
+    outputs:
+      backend_ready:
+        description: "Indica si el backend pasó todas las validaciones"
+        value: ${{ jobs.backend.outputs.backend_ready }}
 
 jobs:
   backend:
     runs-on: ubuntu-latest
+    outputs:
+      backend_ready: ${{ steps.set.outputs.backend_ready }}
     steps:
       - uses: actions/checkout@v3
-
+      - name: Validar input de TechLead
+        run: |
+          if [ "${{ inputs.repo_ok }}" != "true" ]; then
+            echo "Repo validation failed, aborting backend checks"
+            exit 1
+          fi
       - name: Configurar Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-
-      - name: Instalar dependencias
-        run: pip install flask pytest
-
-      - name: Ejecutar pruebas
+      - name: Instalar dependencias backend
+        run: pip install -r backend/requirements.txt
+      - name: Ejecutar pruebas backend
         run: pytest backend/
+      - name: Ejecutar lint backend
+        run: flake8 backend/
+      - id: set
+        run: |
+          echo "backend_ready=true" >> $GITHUB_OUTPUT

@@ -2,15 +2,39 @@ name: Frontend Agent
 
 on:
   workflow_call:
+    inputs:
+      backend_ready:
+        description: "Resultado de validación del backend"
+        required: true
+        type: boolean
+    outputs:
+      frontend_ready:
+        description: "Indica si el frontend pasó pruebas y build"
+        value: ${{ jobs.frontend.outputs.frontend_ready }}
 
 jobs:
   frontend:
     runs-on: ubuntu-latest
+    outputs:
+      frontend_ready: ${{ steps.set.outputs.frontend_ready }}
     steps:
       - uses: actions/checkout@v3
+      - name: Validar input de Backend
+        run: |
+          if [ "${{ inputs.backend_ready }}" != "true" ]; then
+            echo "Backend validation failed, aborting frontend checks"
+            exit 1
+          fi
       - name: Configurar Node
         uses: actions/setup-node@v3
         with:
           node-version: "18"
-      - run: cd frontend && npm install
-      - run: cd frontend && npm test -- --watchAll=false
+      - name: Instalar dependencias frontend
+        run: cd frontend/frontend && npm ci
+      - name: Ejecutar pruebas frontend
+        run: cd frontend/frontend && npm test -- --watchAll=false
+      - name: Construir frontend
+        run: cd frontend/frontend && npm run build
+      - id: set
+        run: |
+          echo "frontend_ready=true" >> $GITHUB_OUTPUT

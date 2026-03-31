@@ -10,15 +10,27 @@ jobs:
   backend:
     needs: techlead
     uses: ./.github/workflows/backend.yml
+    with:
+      repo_ok: ${{ needs.techlead.outputs.repo_ok }}
 
   frontend:
     needs: backend
     uses: ./.github/workflows/frontend.yml
+    with:
+      backend_ready: ${{ needs.backend.outputs.backend_ready }}
 
   qa:
     needs: frontend
     uses: ./.github/workflows/qa.yml
+    with:
+      repo_ok: ${{ needs.techlead.outputs.repo_ok }}
+      backend_ready: ${{ needs.backend.outputs.backend_ready }}
+      frontend_ready: ${{ needs.frontend.outputs.frontend_ready }}
+      backlog_present: ${{ needs.techlead.outputs.backlog_present }}
 
   founder:
     needs: qa
     uses: ./.github/workflows/founder.yml
+    with:
+      qa_ready: ${{ needs.qa.outputs.qa_ready }}
+      backlog_present: ${{ needs.techlead.outputs.backlog_present }}

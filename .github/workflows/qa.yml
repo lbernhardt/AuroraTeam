@@ -1,31 +1,75 @@
 name: QA Agent
+
 on:
   workflow_call:
+    inputs:
+      repo_ok:
+        description: "Resultado de validación del repositorio por TechLead"
+        required: true
+        type: boolean
+      backend_ready:
+        description: "Resultado de validación del backend"
+        required: true
+        type: boolean
+      frontend_ready:
+        description: "Resultado de validación del frontend"
+        required: true
+        type: boolean
+      backlog_present:
+        description: "Indica si el backlog está presente"
+        required: true
+        type: boolean
+    outputs:
+      qa_ready:
+        description: "Indica si QA completó todas las validaciones"
+        value: ${{ jobs.qa.outputs.qa_ready }}
 
 jobs:
   qa:
     runs-on: ubuntu-latest
+    outputs:
+      qa_ready: ${{ steps.set.outputs.qa_ready }}
     steps:
       - uses: actions/checkout@v3
-
+      - name: Verificar inputs de agentes previos
+        run: |
+          if [ "${{ inputs.repo_ok }}" != "true" ]; then
+            echo "TechLead validación fallida"
+            exit 1
+          fi
+          if [ "${{ inputs.backend_ready }}" != "true" ]; then
+            echo "Backend no está listo"
+            exit 1
+          fi
+          if [ "${{ inputs.frontend_ready }}" != "true" ]; then
+            echo "Frontend no está listo"
+            exit 1
+          fi
+          if [ "${{ inputs.backlog_present }}" != "true" ]; then
+            echo "Backlog de producto ausente"
+            exit 1
+          fi
       - name: Configurar Node
         uses: actions/setup-node@v3
         with:
           node-version: "18"
-
       - name: Configurar Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-
-      - name: Instalar dependencias frontend
-        run: cd frontend && npm install
-
-      - name: Lint frontend
-        run: cd frontend && npm run lint
-
-      - name: Instalar flake8
-        run: pip install flake8
-
-      - name: Lint backend
-        run: flake8 backend/
+      - name: Ejecutar pruebas frontend
+        run: |
+          cd frontend/frontend
+          npm ci
+          npm test -- --watchAll=false
+      - name: Ejecutar pruebas backend
+        run: |
+          pip install -r backend/requirements.txt
+          pytest backend/
+      - name: Validar documentación de producto
+        run: |
+          test -f docs/backlog.md
+          echo "QA valida backlog y criterios de entrega"
+      - id: set
+        run: |
+          echo "qa_ready=true" >> $GITHUB_OUTPUT

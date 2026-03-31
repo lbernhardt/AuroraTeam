@@ -1,9 +1,44 @@
 name: Founder Agent
+
 on:
   workflow_call:
+    inputs:
+      qa_ready:
+        description: "Resultado de QA"
+        required: true
+        type: boolean
+      backlog_present:
+        description: "Indica si el backlog está presente"
+        required: true
+        type: boolean
+    outputs:
+      release_ready:
+        description: "Indica si el proyecto está listo para una nueva entrega"
+        value: ${{ jobs.founder.outputs.release_ready }}
+
 jobs:
   founder:
     runs-on: ubuntu-latest
+    outputs:
+      release_ready: ${{ steps.set.outputs.release_ready }}
     steps:
       - uses: actions/checkout@v3
-      - run: test -f docs/backlog.md
+      - name: Verificar inputs de QA y backlog
+        run: |
+          if [ "${{ inputs.qa_ready }}" != "true" ]; then
+            echo "QA falló, no se puede continuar"
+            exit 1
+          fi
+          if [ "${{ inputs.backlog_present }}" != "true" ]; then
+            echo "Backlog ausente"
+            exit 1
+          fi
+      - name: Verificar backlog de producto
+        run: |
+          test -f docs/backlog.md
+          echo "Backlog de producto encontrado"
+          echo "Resumen del backlog:"
+          sed -n '1,20p' docs/backlog.md
+      - id: set
+        run: |
+          echo "release_ready=true" >> $GITHUB_OUTPUT

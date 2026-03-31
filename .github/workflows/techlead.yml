@@ -2,10 +2,38 @@ name: TechLead Agent
 
 on:
   workflow_call:
+    outputs:
+      repo_ok:
+        description: "Resultado de validación del repositorio"
+        value: ${{ jobs.techlead.outputs.repo_ok }}
+      backlog_present:
+        description: "Indica si el backlog de producto está presente"
+        value: ${{ jobs.techlead.outputs.backlog_present }}
 
 jobs:
   techlead:
     runs-on: ubuntu-latest
+    outputs:
+      repo_ok: ${{ steps.set.outputs.repo_ok }}
+      backlog_present: ${{ steps.set.outputs.backlog_present }}
     steps:
       - uses: actions/checkout@v3
-      - run: echo "Tech Lead validando stack y estándares..."
+      - name: Validar estructura del proyecto
+        run: |
+          test -f backend/app.py
+          test -f backend/test_app.py
+          test -f frontend/frontend/package.json
+          test -f .github/workflows/frontend.yml
+          test -f .github/workflows/backend.yml
+          test -f docs/backlog.md
+      - name: Validar archivos Python
+        run: python -m py_compile backend/app.py backend/test_app.py
+      - name: Validar paquete frontend
+        run: |
+          cd frontend/frontend
+          npm ci --ignore-scripts
+          test -f package.json
+      - id: set
+        run: |
+          echo "repo_ok=true" >> $GITHUB_OUTPUT
+          echo "backlog_present=true" >> $GITHUB_OUTPUT
