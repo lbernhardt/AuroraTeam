@@ -1,6 +1,8 @@
 name: Frontend Agent
+
 on:
-  workflow_dispatch:
+  workflow_call:
+
 jobs:
   frontend:
     runs-on: ubuntu-latest
@@ -10,7 +12,5 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18"
-      - name: Instalar dependencias
-        run: cd frontend && npm install
-      - name: Ejecutar tests
-        run: cd frontend && npm test -- --watchAll=false
+      - run: cd frontend && npm install
+      - run: cd frontend && npm test -- --watchAll=false
