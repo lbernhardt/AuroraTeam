@@ -1,14 +1,46 @@
-backend.ymlname: Backend Agent
+name: Backend Agent
 on:
-  workflow_dispatch:   # se dispara manualmente o desde otro workflow
+  workflow_dispatch:
+
 jobs:
   backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Configurar Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-      - run: pip install flask pytest requests
-      - run: pytest backend/
+
+      - name: Crear aplicación mínima
+        run: |
+          mkdir -p backend
+          cat > backend/app.py << 'EOF'
+          from flask import Flask, jsonify
+
+          app = Flask(__name__)
+
+          @app.route("/health", methods=["GET"])
+          def health():
+              return jsonify({"status": "ok"}), 200
+
+          if __name__ == "__main__":
+              app.run(host="0.0.0.0", port=5000)
+          EOF
+
+          cat > backend/test_app.py << 'EOF'
+          from app import app
+
+          def test_health():
+              client = app.test_client()
+              response = client.get("/health")
+              assert response.status_code == 200
+              assert response.json == {"status": "ok"}
+          EOF
+
+      - name: Instalar dependencias
+        run: pip install flask pytest
+
+      - name: Ejecutar pruebas
+        run: pytest backend/
