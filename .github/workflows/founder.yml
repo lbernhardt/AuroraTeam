@@ -61,10 +61,10 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            let issueNumber = inputs.issue_number
+            const issueNumber = core.getInput('issue_number')
             if (!issueNumber) {
-              const milestoneName = inputs.milestone_name
-              const agentTag = inputs.agent_tag
+              const milestoneName = core.getInput('milestone_name')
+              const agentTag = core.getInput('agent_tag')
               const { data: milestones } = await github.rest.issues.listMilestones({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
