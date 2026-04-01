@@ -56,7 +56,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const issueNumber = core.getInput('issue_number')
+            let issueNumber = core.getInput('issue_number')
             if (!issueNumber) {
               const milestoneName = core.getInput('milestone_name')
               const agentTag = core.getInput('agent_tag')
