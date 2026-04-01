@@ -19,6 +19,14 @@ on:
         description: "Indica si el backlog está presente"
         required: true
         type: string
+      issue_number:
+        description: "Número del issue de GitHub para marcar la task"
+        required: false
+        type: string
+      issue_task:
+        description: "Texto exacto de la task en el issue"
+        required: false
+        type: string
     outputs:
       qa_ready:
         description: "Indica si QA completó todas las validaciones"
@@ -73,3 +81,31 @@ jobs:
       - id: set
         run: |
           echo "qa_ready=true" >> $GITHUB_OUTPUT
+
+      - name: Marcar task de QA en el issue
+        if: ${{ inputs.issue_number != '' && inputs.issue_task != '' }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = parseInt(inputs.issue_number, 10)
+            const task = inputs.issue_task
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber
+            })
+            const body = issue.body || ''
+            const escaped = task.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1')
+            const regex = new RegExp('^[-*] \\[' + ' \\] ' + escaped + '$', 'm')
+            if (!regex.test(body)) {
+              core.warning(`Task not found: ${task}`)
+            } else {
+              const newBody = body.replace(regex, `- [x] ${task}`)
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: newBody
+              })
+            }

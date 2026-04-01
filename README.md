@@ -35,4 +35,12 @@ A medida que el proyecto crezca, cada agente puede recibir más responsabilidade
 - backend: pruebas de API, migraciones, contrato de datos.
 - frontend: pruebas E2E, accesibilidad y compatibilidad.
 - qa: pruebas de integración, validaciones de documentación y control de calidad.
-- founder: checkpoint de producto, métricas de negocio y despliegues.
+- founder: checkpoint de producto, métricas de negocio y despliegues.- Cada agente puede ahora marcar una task como completada dentro de un issue de GitHub usando el input `issue_number`.
+
+## Trackeo de tareas en issues
+Para usarlo, ejecuta `sprint0.yml` con el input `issue_number` y crea un checklist en el issue con las líneas exactas usadas por cada agente:
+- `TechLead: Validar estructura del repositorio`
+- `Backend: Validar backend`
+- `Frontend: Validar frontend`
+- `QA: Validar pruebas e integraciones`
+- `Founder: Verificar backlog y release`
