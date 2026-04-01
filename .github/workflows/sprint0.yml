@@ -1,5 +1,8 @@
 name: Sprint 0 Orchestrator
 
+permissions:
+  issues: write
+
 on:
   workflow_dispatch:
     inputs:
