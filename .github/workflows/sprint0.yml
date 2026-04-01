@@ -3,33 +3,32 @@ name: Sprint 0 Orchestrator
 on:
   workflow_dispatch:
     inputs:
-      issue_number:
-        description: "GitHub issue number para marcar tareas de los agentes"
-        required: false
-        default: ''
+      milestone_name:
+        description: "Nombre del milestone para buscar issues"
+        required: true
 
 jobs:
   techlead:
     uses: ./.github/workflows/techlead.yml
     with:
-      issue_number: '${{ github.event.inputs.issue_number }}'
-      issue_task: 'TechLead: Validar estructura del repositorio'
+      milestone_name: '${{ github.event.inputs.milestone_name }}'
+      agent_tag: 'Tech Lead'
 
   backend:
     needs: techlead
     uses: ./.github/workflows/backend.yml
     with:
       repo_ok: '${{ needs.techlead.outputs.repo_ok }}'
-      issue_number: '${{ github.event.inputs.issue_number }}'
-      issue_task: 'Backend: Validar backend'
+      milestone_name: '${{ github.event.inputs.milestone_name }}'
+      agent_tag: 'Backend'
 
   frontend:
     needs: backend
     uses: ./.github/workflows/frontend.yml
     with:
       backend_ready: '${{ needs.backend.outputs.backend_ready }}'
-      issue_number: '${{ github.event.inputs.issue_number }}'
-      issue_task: 'Frontend: Validar frontend'
+      milestone_name: '${{ github.event.inputs.milestone_name }}'
+      agent_tag: 'Frontend'
 
   qa:
     needs: [frontend, backend, techlead]
@@ -39,8 +38,8 @@ jobs:
       backend_ready: '${{ needs.backend.outputs.backend_ready }}'
       frontend_ready: '${{ needs.frontend.outputs.frontend_ready }}'
       backlog_present: '${{ needs.techlead.outputs.backlog_present }}'
-      issue_number: '${{ github.event.inputs.issue_number }}'
-      issue_task: 'QA: Validar pruebas e integraciones'
+      milestone_name: '${{ github.event.inputs.milestone_name }}'
+      agent_tag: 'QA'
 
   founder:
     needs: [qa, techlead]
@@ -48,5 +47,5 @@ jobs:
     with:
       qa_ready: '${{ needs.qa.outputs.qa_ready }}'
       backlog_present: '${{ needs.techlead.outputs.backlog_present }}'
-      issue_number: '${{ github.event.inputs.issue_number }}'
-      issue_task: 'Founder: Verificar backlog y release'
+      milestone_name: '${{ github.event.inputs.milestone_name }}'
+      agent_tag: 'Founder'
