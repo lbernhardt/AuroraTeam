@@ -20,7 +20,7 @@ jobs:
       backend_ready: '${{ needs.backend.outputs.backend_ready }}'
 
   qa:
-    needs: [frontend, techlead]
+    needs: [frontend, backend, techlead]
     uses: ./.github/workflows/qa.yml
     with:
       repo_ok: '${{ needs.techlead.outputs.repo_ok }}'
