@@ -50,3 +50,26 @@ Para usarlo, ejecuta `sprint0.yml` con:
 - `milestone_name`: nombre del milestone donde buscar los issues
 
 Cada job cerrará el issue asociado encontrado por tag dentro del milestone.
+
+## Cómo probar la orquestación
+Puedes probar que los agentes resuelven su tarea en secuencia usando el workflow `sprint0.yml`.
+
+1. Asegúrate de que el repositorio tiene `backend/`, `frontend/frontend/`, y `docs/backlog.md`.
+2. Ve a la pestaña de Actions en GitHub y ejecuta el workflow `Sprint 0 Orchestrator`.
+3. Ingresa el `milestone_name` donde estén los issues de cada agente.
+4. Revisa el resultado de cada job:
+   - `techlead` valida la estructura y el backlog.
+   - `backend` instala dependencias, corre pruebas y lint.
+   - `frontend` instala dependencias, corre pruebas y build.
+   - `qa` ejecuta pruebas de integración y verifica el backlog.
+   - `founder` confirma la readiness final.
+
+Cada agente avanzará solo si el anterior completa correctamente su tarea, y el orquestador detendrá la cadena si hay un fallo.
+
+### Prueba local rápida
+Si quieres verificar localmente sin GitHub Actions, ejecuta manualmente los pasos clave:
+- `cd backend && python -m pip install -r requirements.txt && pytest && flake8 .`
+- `cd frontend/frontend && npm ci && npm test -- --watchAll=false && npm run build`
+- `test -f docs/backlog.md`
+
+Esto te permite ver el mismo comportamiento de cada agente antes de correr el workflow.
